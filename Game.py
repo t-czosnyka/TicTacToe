@@ -18,17 +18,15 @@ class Game:
     def start(self):
         os.system('cls')
         print("\n1")
-        move_count = 0
         self.board.draw()
-        while not self.board.win:
+        while (not self.board.win) and self.board.taken < 9:
             for player in self.players:
                 player.play(self.board)
                 self.board.draw()
                 self.board.check_win()
-                if self.board.win:
+                if self.board.taken == 9 or self.board.win:
                     break
-                move_count +=1
-                if move_count == 5 and not self.board.win:
-                    print("The game has ended in draw.")
         if self.board.win:
             print(f"Player {self.board.winner} won!")
+        else:
+            print("The game has ended in a draw.")

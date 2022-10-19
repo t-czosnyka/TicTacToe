@@ -1,4 +1,5 @@
 from Game import Game
+from Board import Board
 
 type_ok = False
 while not type_ok:
@@ -22,13 +23,13 @@ while not type_ok:
 if isinstance(game, Game):
     game.start()
 
-# board = Board()
-# board.write(2, 0, 2)
+# board = Board(3)
+# board.write(0, 1, 2)
 # board.write(1, 1, 2)
-# board.write(0, 2, 2)
+# board.write(2, 1, 2)
 #
 # board.draw()
-# print(board.check_line(9))
+# print(board.check_win())
 
 
 

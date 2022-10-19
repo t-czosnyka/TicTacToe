@@ -40,11 +40,11 @@ class Board:
         for i in range(len(self.fields)):
             if 0 < line < 4:  # vertical lines
                 result = self.check_field(i, line - 1, empty)
-            elif 4 <= line < 8:  # horizontal lines
+            elif 4 <= line < 7:  # horizontal lines
                 result = self.check_field(line - 4, i, empty)
-            elif line == 8:  # first diagonal
+            elif line == 7:  # first diagonal
                 result = self.check_field(i, i, empty)
-            elif line == 9:  # second diagonal
+            elif line == 8:  # second diagonal
                 result = self.check_field(2 - i, i, empty)
             else:
                 print("Wrong parameter: ", line)
@@ -58,6 +58,7 @@ class Board:
         return self.fields[y][x].get()
 
     def write(self, y, x, v):
+        self.taken += 1
         return self.fields[y][x].set(v)
 
     def draw(self):
@@ -70,36 +71,16 @@ class Board:
                 print("\n-----")
         print("\n")
 
-    def check_win(self):  # Possible improvement
+    def check_win(self):
         self.win = False
-
-        for y in range(len(self.fields)):
-            if self.read(y, 0) != ' ':  # check win horizontal
-                if self.read(y, 0) == self.read(y, 1) == self.read(y, 2):
-                    self.win = True
-                    winner = self.read(y, 0)
-                    print("win horizontal")
-
-            if not self.win and self.read(0, y) != ' ':  # check win vertical
-                if self.read(0, y) == self.read(1, y) == self.read(2, y):
-                    self.win = True
-                    winner = self.read(0, y)
-                    print("win vertical")
-        if not self.win and self.read(1, 1) != ' ':  # check win diagonal 1
-            if self.read(1, 1) == self.read(0, 0) == self.read(2, 2):
+        for i in range(8):
+            result = self.check_line(i+1)
+            if result[0] == self.size:
                 self.win = True
-                winner = self.read(1, 1)
-                print("win diagonal")  # check win diagonal 1
-            elif self.read(1, 1) == self.read(0, 2) == self.read(2, 0):
-                self.win = True
-                winner = self.read(1, 1)
-                print("win diagonal")
-
-        if self.win:
-            if winner == 'X':
                 self.winner = 1
-            elif winner == 'O':
+                break
+            elif result[1] == self.size:
+                self.win = True
                 self.winner = 2
-        else:
-            print("No win.")
+                break
         return self.win

@@ -38,7 +38,7 @@ class Player:
                     positions[0] = randint(0, 2)
                     positions[1] = randint(0, 2)
                     if board.read(positions[0], positions[1]) == " ":
-                        time.sleep(3)
+                        time.sleep(1)
                         board.write(positions[0], positions[1], self.number)
                         played = True
         if played:
