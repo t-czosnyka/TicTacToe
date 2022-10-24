@@ -17,14 +17,14 @@ class Game:
 
     def start(self):
         os.system('cls')
-        print("\n1")
+        print("\n")
         self.board.draw()
-        while (not self.board.win) and self.board.taken < 9:
+        while (not self.board.win) and len(self.board.free_fields) > 0:
             for player in self.players:
                 player.play(self.board)
                 self.board.draw()
                 self.board.check_win()
-                if self.board.taken == 9 or self.board.win:
+                if len(self.board.free_fields) == 0 or self.board.win:
                     break
         if self.board.win:
             print(f"Player {self.board.winner} won!")

@@ -6,13 +6,14 @@ class Board:
         self.size = size
 
         self.fields = list()
+        self.free_fields = list()
         for i in range(self.size):
             self.fields.append(list())
             for j in range(self.size):
                 self.fields[i].append(Field())
+                self.free_fields.append((i, j))
         self.win = False
         self.winner = 0
-        self.taken = 0
 
     def check_empty(self, y, x):
         if self.read(y, x) == " ":
@@ -58,7 +59,8 @@ class Board:
         return self.fields[y][x].get()
 
     def write(self, y, x, v):
-        self.taken += 1
+        if self.check_empty(y, x):
+            self.free_fields.remove((y, x))
         return self.fields[y][x].set(v)
 
     def draw(self):
@@ -70,6 +72,7 @@ class Board:
             if y != 2:
                 print("\n-----")
         print("\n")
+        print(self.free_fields)
 
     def check_win(self):
         self.win = False
