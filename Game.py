@@ -3,6 +3,7 @@ from random import randint
 from Board import Board
 from Player import Player
 
+
 class Game:
 
     def __init__(self, player1_ctrl, player2_ctrl):

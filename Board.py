@@ -1,5 +1,6 @@
 from Field import Field
 
+
 class Board:
 
     def __init__(self, size):
@@ -72,7 +73,6 @@ class Board:
             if y != 2:
                 print("\n-----")
         print("\n")
-        print(self.free_fields)
 
     def check_win(self):
         self.win = False
