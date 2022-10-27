@@ -1,7 +1,16 @@
 import os
+import logging
 from random import randint
 from Board import Board
 from Player import Player
+
+
+result_logger = logging.getLogger(__name__)
+file_handler = logging.FileHandler('result.log')
+result_logger.setLevel(logging.INFO)
+file_format = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+file_handler.setFormatter(file_format)
+result_logger.addHandler(file_handler)
 
 
 class Game:
@@ -29,5 +38,9 @@ class Game:
                     break
         if self.board.win:
             print(f"Player {self.board.winner} won!")
+            result_logger.info(f"Games result is : {self.board.winner}")
+            return self.board.winner
         else:
             print("The game has ended in a draw.")
+            result_logger.info("Games result is : 3")
+            return 3

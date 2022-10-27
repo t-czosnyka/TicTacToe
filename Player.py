@@ -58,7 +58,7 @@ class Player:
                             choices = choices + line_corners
                         else:
                             choices = choices + line_1[2]
-                    # print("Prio 3 found")
+                    print("Prio 3 found")
             # print("choices", choices)
         if prio < 100:
             # print("Not random played.")
@@ -66,7 +66,7 @@ class Player:
             # print("choices/free fields", choices)
             positions = random.choice(choices)
         elif prio == 100:
-            # print("Random played.")
+            print("Random played.")
             positions = random.choice(board.free_fields)
         return positions
 

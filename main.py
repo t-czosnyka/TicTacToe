@@ -1,6 +1,5 @@
 from Game import Game
 import os
-from Board import Board
 
 type_ok = False
 while not type_ok:
@@ -23,16 +22,17 @@ while not type_ok:
     else:
         print("Wrong game type.")
 
-if isinstance(game, Game):
-    game.start()
+try:
+    result = game.start()
+except NameError as e:
+    print("Unable to start the game. ", e)
 
-# board = Board(3)
-# board.write(0, 1, 2)
-# board.write(1, 1, 2)
-# board.write(2, 1, 2)
-#
-# board.draw()
-# print(board.check_win())
+# for i in range(100):
+#     game = Game("c", "c")
+#     game.start()
+
+
+
 
 
 
