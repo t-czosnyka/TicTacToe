@@ -17,14 +17,14 @@ class Board:
         self.winner = 0
 
     def check_empty(self, y, x):
-        if self.read(y, x) == " ":
+        if self.read([y, x]) == " ":
             return True
         else:
             return False
 
     def check_field(self, y: int, x: int, empty: list):
         pl1 = pl2 = 0
-        value = self.read(y, x)
+        value = self.read([y, x])
         if value == "X":
             pl1 = 1
         elif value == "O":
@@ -54,20 +54,20 @@ class Board:
 
             player1 += result[0]
             player2 += result[1]
-        return player1, player2, empty
+        return player1, player2, empty, line
 
-    def read(self, y, x):
-        return self.fields[y][x].get()
+    def read(self, pos):
+        return self.fields[pos[0]][pos[1]].get()
 
-    def write(self, y, x, v):
-        if self.check_empty(y, x):
-            self.free_fields.remove((y, x))
-        return self.fields[y][x].set(v)
+    def write(self, pos, v):
+        if self.check_empty(pos[0], pos[1]):
+            self.free_fields.remove((pos[0], pos[1]))
+        return self.fields[pos[0]][pos[1]].set(v)
 
     def draw(self):
         for y in range(len(self.fields)):
             for x in range(len(self.fields[y])):
-                print(self.read(y, x), end="")
+                print(self.read([y, x]), end="")
                 if x != 2:
                     print("|", end="")
             if y != 2:
