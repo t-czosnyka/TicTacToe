@@ -5,7 +5,7 @@ import time
 
 
 class Player:
-
+    # parent class for both types of players
     def __init__(self, number: int):
         self.number = number
         self.player_type = " "
@@ -14,6 +14,7 @@ class Player:
         pass
 
     def play(self, board: Board):
+        # get positions for both type of players
         played = False
         while not played:
             print(f"Player {self.number} {self.player_type} turn: ")
@@ -32,14 +33,15 @@ class ComputerPlayer(Player):
         self.player_type = "Computer"
 
     def get_positions(self, board):
+        #function to choose where to play based on current situation on board
         choices = list()
         prio = 100  # action priority - smaller -> more important
         corners = [(0, 0), (1, 1), (0, board.size - 1), (board.size - 1, 0), (board.size - 1, board.size - 1)]
-        if len(board.free_fields) >= 8:  # first player - center or corners
+        if len(board.free_fields) >= 8:  # first move - center or corners
             prio = 50
             if all([item in board.free_fields for item in corners]):  # all corners free
                 choices = corners + [(1, 1)]
-            elif board.check_empty(1, 1):
+            elif board.check_empty((1, 1)):         #  oponnet took corner play center
                 choices = [(1, 1)]
             else:
                 choices = corners
@@ -49,7 +51,6 @@ class ComputerPlayer(Player):
                 line = board.check_line(i)
                 if len(line[2]) != 0:
                     possible_choices.append(board.check_line(i))
-            print(len(possible_choices))
             for line_1 in possible_choices:
                 if line_1[self.number - 1] == 2 and line_1[2 - self.number] == 0:  # Victory possible prio = 1
                     if prio > 10:
@@ -64,9 +65,10 @@ class ComputerPlayer(Player):
                     if prio == 20:
                         choices = choices + line_1[2]
                 elif line_1[self.number - 1] == 1 and line_1[2 - self.number] == 0 and line_1[3] <= 6\
-                and len(board.free_fields) == 6 and not board.check_empty(1, 1):     # specialcase
-                    choices.clear()
-                    prio = 25
+                and len(board.free_fields) == 6 and not board.check_empty((1, 1)):     # special case
+                    if prio > 25:
+                        choices.clear()
+                        prio = 25
                     if prio == 25:
                         choices = choices + line_1[2]
 
@@ -83,13 +85,15 @@ class ComputerPlayer(Player):
                         choices.clear()
                     if prio == 40:
                         choices = choices + line_1[2]
-                print("prio3/4", choices, prio)
+                # print("Prio: ", prio, choices)
+        # print(choices)
         if prio < 100:
             choices = [value for value in board.free_fields if value in choices]
             positions = random.choice(choices)
         elif prio == 100:
             positions = random.choice(board.free_fields)
         time.sleep(3)
+        print(positions)
         return positions
 
 
@@ -100,16 +104,17 @@ class HumanPlayer(Player):
         self.player_type = "Human"
 
     def get_positions(self, board):
+        # Get position input from human player
         played = False
-        while not played:
-            pos = input("Input position, format \"x,y\", range 1-3: ")
+        while not played:  # Reapat until correct value recived
+            pos = input("Input position, format: \"x,y\", range 1-3: ")
             if ',' in pos:
                 positions = pos.split(',')
                 if positions[0].isdecimal() and positions[1].isdecimal():
                     positions = [int(value) - 1 for value in positions]
                     if positions[0] in range(0, 3) and positions[1] in range(0, 3):
                         positions.reverse()
-                        if board.check_empty(positions[0], positions[1]):
+                        if board.check_empty(positions):
                             played = True
                             return positions[0], positions[1]
                         else:

@@ -1,0 +1,104 @@
+2022-10-27 15:34:22,140 - __main__ - INFO - information
+2022-10-27 15:36:25,457 - result logger - INFO - Games result is : 3
+2022-10-27 15:36:25,889 - result logger - INFO - Games result is : 3
+2022-10-27 15:36:26,311 - result logger - INFO - Games result is : 3
+2022-10-27 15:36:26,732 - result logger - INFO - Games result is : 3
+2022-10-27 15:36:27,152 - result logger - INFO - Games result is : 3
+2022-10-27 15:36:27,576 - result logger - INFO - Games result is : 3
+2022-10-27 15:36:28,002 - result logger - INFO - Games result is : 3
+2022-10-27 15:36:28,426 - result logger - INFO - Games result is : 3
+2022-10-27 15:56:15,177 - result logger - INFO - Games result is : 3
+2022-10-27 15:57:22,645 - result logger - INFO - Games result is : 2
+2022-10-27 15:58:00,114 - result logger - INFO - Games result is : 3
+2022-10-27 15:59:08,838 - result logger - INFO - Games result is : 2
+2022-10-27 15:59:29,669 - result logger - INFO - Games result is : 2
+2022-10-27 15:59:46,752 - result logger - INFO - Games result is : 2
+2022-10-27 15:59:59,226 - result logger - INFO - Games result is : 2
+2022-10-27 16:00:07,829 - result logger - INFO - Games result is : 2
+2022-10-27 16:00:24,876 - result logger - INFO - Games result is : 2
+2022-10-27 16:00:42,808 - result logger - INFO - Games result is : 2
+2022-10-27 16:30:01,930 - Game - INFO - Games result is : 3
+2022-10-28 10:21:46,858 - Game - INFO - Games result is : 1
+ Players:<class 'Player.HumanPlayer'>  <class 'Player.HumanPlayer'>
+2022-10-28 10:22:24,631 - Game - INFO - Games result is : 3
+2022-10-28 14:31:27,625 - Game - INFO - Games result is : 1
+ Players:Computer  Human
+2022-10-28 14:34:12,952 - Game - INFO - Games result is : 3
+ Players:1:Human
+ 2:Computer
+2022-10-28 14:36:44,657 - Game - INFO - Games result is : 3
+ Players:2:Computer 1:Computer
+2022-10-28 14:44:02,769 - Game - INFO - Games result is: 2
+ Players:2:Human 1:Computer
+2022-10-28 14:48:14,857 - Game - INFO - Games result is: 1
+ Players:2:Human 1:Computer
+2022-10-28 14:50:13,683 - Game - INFO - Games result is : 3
+ Players:2:Computer 1:Human
+2022-10-28 14:52:27,374 - Game - INFO - Games result is: 1
+ Players:1:Human 2:Computer
+2022-10-28 14:56:52,711 - Game - INFO - Games result is: 2
+ Players:2:Computer 1:Human
+2022-10-28 14:57:56,343 - Game - INFO - Games result is: 2
+ Players:2:Computer 1:Human
+2022-10-28 14:59:28,550 - Game - INFO - Games result is: 2
+ Players:2:Computer 1:Human
+2022-10-28 15:00:34,194 - Game - INFO - Games result is : 3
+ Players:1:Human 2:Computer
+2022-10-28 15:05:31,351 - Game - INFO - Games result is: 2
+ Players:2:Human 1:Computer
+2022-10-28 15:19:27,880 - Game - INFO - Games result is: 1
+ Players:2:Human 1:Computer
+2022-10-28 15:27:34,074 - Game - INFO - Games result is: 1
+ Players:1:Computer 2:Human
+2022-10-28 15:41:30,667 - Game - INFO - Games result is: 2
+ Players:2:Computer 1:Human
+2022-10-28 15:50:15,313 - Game - INFO - Games result is: 2
+ Players:2:Computer 1:Human
+2022-10-28 15:50:49,947 - Game - INFO - Games result is: 1
+ Players:1:Computer 2:Human
+2022-10-28 16:03:33,576 - Game - INFO - Games result is: 2
+ Players:2:Computer 1:Human
+2022-10-28 16:04:49,098 - Game - INFO - Games result is : 3
+ Players:2:Human 1:Computer
+2022-10-28 16:07:53,638 - Game - INFO - Games result is : 3
+ Players:2:Human 1:Computer
+2022-10-28 16:11:14,936 - Game - INFO - Games result is : 3
+ Players:2:Computer 1:Human
+2022-10-28 16:12:07,219 - Game - INFO - Games result is: 2
+ Players:2:Computer 1:Human
+2022-10-29 08:45:41,110 - Game - INFO - Games result is : 3
+ Players:2:Computer 1:Computer
+2022-10-29 09:02:52,351 - Game - INFO - Games result is: 2
+ Players:1:Computer 2:Computer
+2022-10-29 09:08:01,531 - Game - INFO - Games result is : 3
+ Players:1:Computer 2:Computer
+2022-10-29 09:08:21,537 - Game - INFO - Games result is: 2
+ Players:1:Computer 2:Computer
+2022-10-29 09:11:09,401 - Game - INFO - Games result is : 3
+ Players:2:Computer 1:Computer
+2022-10-29 09:11:40,958 - Game - INFO - Games result is : 3
+ Players:2:Computer 1:Computer
+2022-10-29 09:12:46,292 - Game - INFO - Games result is: 2
+ Players:1:Computer 2:Human
+2022-10-29 09:16:10,220 - Game - INFO - Games result is : 3
+ Players:2:Computer 1:Computer
+2022-10-29 09:19:38,195 - Game - INFO - Games result is : 3
+ Players:1:Computer 2:Computer
+2022-10-29 09:33:26,229 - Game - INFO - Games result is : 3
+ Players:2:Computer 1:Computer
+2022-10-29 09:33:45,395 - Game - INFO - Games result is: 2
+ Players:1:Human 2:Human
+2022-10-29 09:34:46,029 - Game - INFO - Games result is: 1
+ Players:1:Computer 2:Human
+2022-10-29 09:35:17,431 - Game - INFO - Games result is : 3
+ Players:1:Human 2:Computer
+2022-10-29 09:36:06,742 - Game - INFO - Games result is : 3
+ Players:2:Human 1:Computer
+2022-10-29 09:36:36,843 - Game - INFO - Games result is: 1
+ Players:1:Computer 2:Human
+2022-10-29 09:37:13,465 - Game - INFO - Games result is : 3
+ Players:2:Computer 1:Computer
+2022-10-29 09:39:28,198 - Game - INFO - Games result is : 3
+ Players:1:Computer 2:Computer
+2022-10-29 09:39:58,965 - Game - INFO - Games result is: 1
+ Players:2:Human 1:Computer

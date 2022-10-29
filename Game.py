@@ -6,7 +6,7 @@ from Board import Board
 from Player import HumanPlayer
 from Player import ComputerPlayer
 
-
+#logging results
 result_logger = logging.getLogger(__name__)
 file_handler = logging.FileHandler('result.log')
 result_logger.setLevel(logging.INFO)
@@ -22,6 +22,7 @@ class Game:
         self.board = Board(3)
 
     def start(self):
+        # main game function
         type_ok = False
         while not type_ok:
             os.system('cls')
@@ -37,7 +38,7 @@ class Game:
                 type_ok = True
 
             elif game_type == "2":
-                plr_num = random.sample([1, 2], 2)
+                plr_num = random.sample([1, 2], 2)      # randomize player numbers
                 self.players.append(ComputerPlayer(plr_num[0]))
                 self.players.append(HumanPlayer(plr_num[1]))
                 type_ok = True
@@ -48,15 +49,15 @@ class Game:
                 type_ok = True
             else:
                 print("Wrong game type.")
-        random.shuffle(self.players)
+        random.shuffle(self.players)         # randomize which player starts
         os.system('cls')
         print("\n")
         self.board.draw()
-        while (not self.board.win) and len(self.board.free_fields) > 0:
-            for player in self.players:
+        while (not self.board.win) and len(self.board.free_fields) > 0: # play until somebody wins or board is full
+            for player in self.players:     # play each player
                 player.play(self.board)
-                self.board.draw()
-                self.board.check_win()
+                self.board.draw()           # draw the board
+                self.board.check_win()      # check if somebody won
                 if len(self.board.free_fields) == 0 or self.board.win:
                     break
         if self.board.win:
