@@ -43,6 +43,10 @@ class Board:
                 return True
             else:
                 return False
+        elif not self.check_empty(pos) and v == 0:
+            self.fields[pos[0]][pos[1]] = " "
+            self.free_fields.append(pos)
+            return True
         else:
             return False
 
@@ -97,6 +101,7 @@ class Board:
     def check_win(self):
         # check if any of the lines is marked by one player if yes return true
         self.win = False
+        self.winner = 0
         for i in range(8):
             result = self.check_line(i+1)
             if result[0] == self.size:
