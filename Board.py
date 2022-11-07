@@ -31,7 +31,7 @@ class Board:
             return False
 
     def write(self, pos, v):
-        # write to the field pos if not empty, v - player numebr 1- X , 2-O
+        # write to the field pos if not empty, v - player number 1- X , 2-O
         if self.check_empty(pos):
             if v == 1:
                 self.fields[pos[0]][pos[1]] = "X"
@@ -65,7 +65,7 @@ class Board:
 
     def check_line(self, line: int):
         # check situation on board, return amount of field belonging to each player and empty field in each line
-        # line=1,2,3 vertical lines, line= 4,5,6 horizontal, line= 8,9 diagonal
+        # =1,2,3 vertical lines, line= 4,5,6 horizontal, line= 8,9 diagonal
         player1 = 0
         player2 = 0
         empty = list()

@@ -2,9 +2,11 @@ from Game import Game
 from Board import Board
 from Player import MinMaxComputerPlayer
 
+# main game function
 game = Game()
 winner = game.start()
 
+# check result of 100 games computer vs MinMax computer
 # win1 = win2 = draw = 0
 # for i in range(100):
 #     game = Game()
@@ -17,24 +19,16 @@ winner = game.start()
 #         draw += 1
 # print(win1, win2, draw)
 
-
+# testing minmax algorithm
 # board = Board(3)
 # player = MinMaxComputerPlayer(1)
 # board.write((0, 0), 1)
 # board.write((0, 2), 1)
-# board.write((2, 2), 1)
+# #board.write((2, 2), 1)
 #
 # board.write((0, 1), 2)
-# board.write((1, 0), 2)
+# #board.write((1, 0), 2)
 # board.write((1, 2), 2)
 # board.draw()
 # minmax_res = player.get_positions(board)
-# print("result", minmax_res)
-
-
-
-
-
-
-
-
+# print("result", minmax_res, player.evaluations)

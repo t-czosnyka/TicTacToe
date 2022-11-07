@@ -15,6 +15,7 @@ class Player:
 
     def play(self, board: Board):
         # get positions for both type of players
+        positions = list()
         played = False
         while not played:
             print(f"Player {self.number} {self.player_type} turn: ")
@@ -35,6 +36,7 @@ class ComputerPlayer(Player):
     def get_positions(self, board):
         # function to choose where to play based on current situation on board
         choices = list()
+        positions = list()
         prio = 100  # action priority - smaller -> more important
         corners = [(0, 0), (0, board.size - 1), (board.size - 1, 0), (board.size - 1, board.size - 1)]
         if len(board.free_fields) >= 8:  # first move - center or corners
@@ -131,9 +133,11 @@ class MinMaxComputerPlayer(Player):
     def __init__(self, number: int):
         super().__init__(number)
         self.player_type = "MinMax Computer"
+        self.evaluations = 0
 
     def get_positions(self, board):
         # function to choose where to play based on current situation on board
+        self.evaluations = 0
         choices = list()
         corners = [(0, 0), (0, board.size - 1), (board.size - 1, 0), (board.size - 1, board.size - 1)]
         if len(board.free_fields) == 9:  # first move - center or corners
@@ -146,54 +150,60 @@ class MinMaxComputerPlayer(Player):
             else:                                                           # else play corner or center
                 choices = corners + [(1, 1)]
         else:     # next moves use MinMax algorithm
-            evaluation, choices = self.min_max(board, self.number)
-        choices = [value for value in board.free_fields if value in choices] # take choices only if they are free field
+            evaluation, choices = self.min_max(board, self.number, -100, 100)
+        choices = [value for value in board.free_fields if value in choices]  # take choices only if they are free field
         positions = random.choice(choices)
         time.sleep(3)
         return positions
 
-    def min_max(self, board, player):
+    def min_max(self, board, player, best_max, best_min):
+        # minmax algorithm with alpha beta returning evaluation and best move
         free_fields = board.free_fields.copy()
         max_eval = -100
         min_eval = 100
-        max_move = list()
-        if player == self.number:
+        max_move = min_move = list()
+        if player == self.number:  # maximizing player
             for move in free_fields:
-                board.write(move, self.number)
+                board.write(move, self.number)                # make a test move
                 board.check_win()
-                if board.win or len(board.free_fields) == 0:
+                if board.win or len(board.free_fields) == 0:  # evaluate result if game is finished
                     evaluation = self.eval(board)
-                else:
-                    evaluation, temp_move = self.min_max(board, 3 - self.number)
-                #print(evaluation)
-                if evaluation > max_eval:
-                    max_eval = evaluation
+                    self.evaluations += 1
+                else:                                          # if game is not finish recursive call for min player
+                    evaluation, temp_move = self.min_max(board, 3 - self.number, best_max, best_min)
+                if evaluation > max_eval:                     # if evaluation is better than current max save as max
+                    max_eval = evaluation                     # clear current best move, add move to best moves
                     max_move.clear()
                     max_move.append(move)
                 elif evaluation == max_eval:
-                    max_move.append(move)
-                max_eval = max(evaluation, max_eval)
-                board.write(move, 0)
+                    max_move.append(move)                    # if evaluation is the same as best add move to best moves
+                best_max = max(best_max, evaluation)         # save current best evaluation as best_max
+                board.write(move, 0)                         # undo the test move
                 board.check_win()
+                if evaluation > best_min:                   # if evaluation is better than other option for calling
+                    break                                   # minimizing player - break the loop - beta
             return max_eval, max_move
-        else:
+        else:  # minimizing player
             for move in free_fields:
-                board.write(move, 3 - self.number)
+                board.write(move, 3 - self.number)        # make a test move
                 board.check_win()
-                if board.win or len(board.free_fields) == 0:
+                if board.win or len(board.free_fields) == 0:  # evaluate result if game is finished
                     evaluation = self.eval(board)
-                else:
-                    evaluation, temp_move = self.min_max(board, self.number)
-                # print(evaluation)
-                if evaluation <= min_eval:
-                    min_eval = evaluation
-                    min_move = move
-                #min_eval = min(evaluation, min_eval)
-                board.write(move, 0)
+                    self.evaluations += 1
+                else:                                       # if game is not finish recursive call for max player
+                    evaluation, temp_move = self.min_max(board, self.number, best_max, best_min)
+                min_eval = min(evaluation, min_eval)      # find the lowest evaluation
+                min_move = move                           # save min move - doesn't matter
+                best_min = min(best_min, evaluation)      # save current best evaluation for minimizer as best_min
+                board.write(move, 0)                      # undo the test move
                 board.check_win()
+                if evaluation < best_max:
+                    break
             return min_eval, min_move
 
     def eval(self, board):
+        # evaluation of state on board if calling player is winner - positive if opponent - negative
+        # no winner = 0, each free field + 1 point
         if board.win and board.winner == self.number:
             return len(board.free_fields)+1
         elif board.win and board.winner != self.number:

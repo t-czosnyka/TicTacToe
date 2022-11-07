@@ -65,7 +65,7 @@ class Game:
             os.system('cls')
             print("\n")
             self.board.draw()
-            while (not self.board.win) and len(self.board.free_fields) > 0: # play until somebody wins or board is full
+            while (not self.board.win) and len(self.board.free_fields) > 0:  # play until somebody wins or board is full
                 for player in self.players:     # play each player
                     player.play(self.board)
                     self.board.draw()           # draw the board
