@@ -1,0 +1,10 @@
+# created by virtualenv automatically
+venv/Lib
+.idea
+__pycache__
+result.log
+result.log.1
+result.log.2
+result.log.3
+result.log.4
+result.log.5
