@@ -548,3 +548,5 @@
  Players:2:Computer 1:MinMax Computer
 2022-11-07 14:03:46,593 - Game - INFO - Games result is : 3
  Players:2:Human 1:MinMax Computer
+2023-03-02 17:23:21,181 - Game - INFO - Games result is: 2
+ Players:1:Human 2:Computer

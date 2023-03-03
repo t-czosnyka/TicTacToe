@@ -6,31 +6,35 @@ import time
 
 class Player:
     # parent class for both types of players
-    def __init__(self, number: int):
-        self.number = number
+    def __init__(self, mark: int):
+        self.mark = mark
         self.player_type = " "
 
-    def get_positions(self, board):
+    def get_positions(self, board) -> tuple[int, int]:
         pass
 
     def play(self, board: Board):
-        # get positions for both type of players
+        # general function to make a move by every type of player
         positions = list()
         played = False
+        # repeat loop until correct positions are inserted
         while not played:
-            print(f"Player {self.number} {self.player_type} turn: ")
+            print(f"Player {self.mark} {self.player_type} turn: ")
+            # get positions
             positions = self.get_positions(board)
-            if board.write(positions, self.number):
+            # write field
+            if board.write_field((positions[0], positions[1]), self.mark):
+                # exit loop if player successfully marked a field
                 played = True
-        if played:
-            os.system('cls')
-            print(f"Player {self.number} played [{positions[1] + 1},{positions[0] + 1}].")
+        # write information after player makes a move
+        os.system('cls')
+        print(f"Player {self.mark} played [{positions[1] + 1},{positions[0] + 1}].")
 
 
 class ComputerPlayer(Player):
 
-    def __init__(self, number: int):
-        super().__init__(number)
+    def __init__(self, mark: int):
+        super().__init__(mark)
         self.player_type = "Computer"
 
     def get_positions(self, board):
@@ -39,34 +43,43 @@ class ComputerPlayer(Player):
         positions = list()
         prio = 100  # action priority - smaller -> more important
         corners = [(0, 0), (0, board.size - 1), (board.size - 1, 0), (board.size - 1, board.size - 1)]
-        if len(board.free_fields) >= 8:  # first move - center or corners
+        # first move - center or corners
+        if len(board.free_fields) >= 8:
             prio = 50
-            if all([item in board.free_fields for item in corners]):  # all corners free
+            # all corners free
+            if all([item in board.free_fields for item in corners]):
                 choices = corners + [(1, 1)]
-            elif board.check_empty((1, 1)):  # opponent took corner play center
+            # opponent took corner play center
+            elif board.check_empty((1, 1)):
                 choices = [(1, 1)]
-            else:                           # opponent took corner play center
+            # play corners
+            else:
                 choices = corners
+        # Next moves
         elif len(board.free_fields) < 8:
-            possible_choices = list()  # Evaluate situation on board
+            # Evaluate situation on board
+            not_full_lines = list()
+            # get information from every line on board
             for i in range(1, 9):
                 line = board.check_line(i)
+                # save line if it is not full
                 if len(line[2]) != 0:
-                    possible_choices.append(board.check_line(i))
-            for line_1 in possible_choices:
-                if line_1[self.number - 1] == 2 and line_1[2 - self.number] == 0:  # Victory possible prio = 1
+                    not_full_lines.append(line)
+            # evaluate not full lines
+            for line_1 in not_full_lines:
+                if line_1[self.mark - 1] == 2 and line_1[2 - self.mark] == 0:  # Victory possible prio = 1
                     if prio > 10:
                         choices.clear()
                         prio = 10
                     if prio == 10:
                         choices = choices + line_1[2]
-                elif line_1[self.number - 1] == 0 and line_1[2 - self.number] == 2 and prio >= 2:  # Block defeat prio=2
+                elif line_1[self.mark - 1] == 0 and line_1[2 - self.mark] == 2 and prio >= 2:  # Block defeat prio=2
                     if prio > 20:
                         choices.clear()
                         prio = 20
                     if prio == 20:
                         choices = choices + line_1[2]
-                elif line_1[self.number - 1] == 1 and line_1[2 - self.number] == 0 and line_1[3] <= 6 \
+                elif line_1[self.mark - 1] == 1 and line_1[2 - self.mark] == 0 and line_1[3] <= 6 \
                         and len(board.free_fields) == 6 and not board.check_empty((1, 1)):  # special case
                     if prio > 25:
                         choices.clear()
@@ -74,7 +87,7 @@ class ComputerPlayer(Player):
                     if prio == 25:
                         choices = choices + line_1[2]
 
-                elif line_1[self.number - 1] == 1 and line_1[2 - self.number] == 0:  # Play in a most promising line
+                elif line_1[self.mark - 1] == 1 and line_1[2 - self.mark] == 0:  # Play in a most promising line
                     if prio > 30:
                         line_corners = [value for value in line_1[2] if value in corners]  # find free corner to play
                         if len(line_corners) > 0:
@@ -100,38 +113,35 @@ class ComputerPlayer(Player):
 
 class HumanPlayer(Player):
 
-    def __init__(self, number: int):
-        super().__init__(number)
+    def __init__(self, mark: int):
+        super().__init__(mark)
         self.player_type = "Human"
 
     def get_positions(self, board):
         # Get position input from human player
-        played = False
-        while not played:  # Repeat until correct value received
-            pos = input("Input position, format: \"x,y\", range 1-3: ")
-            if ',' in pos:
-                positions = pos.split(',')
-                if positions[0].isdecimal() and positions[1].isdecimal():
-                    positions = [int(value) - 1 for value in positions]
-                    if positions[0] in range(0, 3) and positions[1] in range(0, 3):
-                        positions.reverse()
-                        if board.check_empty(positions):
-                            played = True
-                            return positions[0], positions[1]
-                        else:
-                            print("Field already taken.")
-                    else:
-                        print("Position value out of range.")
-                else:
-                    print("Wrong format.")
-            else:
+        while True:  # Repeat until correct value received
+            user_input = input("Input position, format: \"x,y\", range 1-3: ")
+            if ',' not in user_input:
                 print("Wrong format.")
-
+                continue
+            positions = user_input.split(',')
+            if not positions[0].isdecimal() or not positions[1].isdecimal():
+                print("Wrong format.")
+                continue
+            positions = [int(value) - 1 for value in positions]
+            if positions[0] not in range(0, 3) or positions[1] not in range(0, 3):
+                print("Position value out of range.")
+                continue
+            positions.reverse()
+            if not board.check_empty(positions):
+                print("Field already taken.")
+                continue
+            return positions[0], positions[1]
 
 class MinMaxComputerPlayer(Player):
 
-    def __init__(self, number: int):
-        super().__init__(number)
+    def __init__(self, mark: int):
+        super().__init__(mark)
         self.player_type = "MinMax Computer"
         self.evaluations = 0
 
@@ -150,7 +160,7 @@ class MinMaxComputerPlayer(Player):
             else:                                                           # else play corner or center
                 choices = corners + [(1, 1)]
         else:     # next moves use MinMax algorithm
-            evaluation, choices = self.min_max(board, self.number, -100, 100)
+            evaluation, choices = self.min_max(board, self.mark, -100, 100)
         choices = [value for value in board.free_fields if value in choices]  # take choices only if they are free field
         positions = random.choice(choices)
         time.sleep(3)
@@ -162,15 +172,15 @@ class MinMaxComputerPlayer(Player):
         max_eval = -100
         min_eval = 100
         max_move = min_move = list()
-        if player == self.number:  # maximizing player
+        if player == self.mark:  # maximizing player
             for move in free_fields:
-                board.write(move, self.number)                # make a test move
+                board.write_field(move, self.mark)                # make a test move
                 board.check_win()
                 if board.win or len(board.free_fields) == 0:  # evaluate result if game is finished
                     evaluation = self.eval(board)
                     self.evaluations += 1
                 else:                                          # if game is not finish recursive call for min player
-                    evaluation, temp_move = self.min_max(board, 3 - self.number, best_max, best_min)
+                    evaluation, temp_move = self.min_max(board, 3 - self.mark, best_max, best_min)
                 if evaluation > max_eval:                     # if evaluation is better than current max save as max
                     max_eval = evaluation                     # clear current best move, add move to best moves
                     max_move.clear()
@@ -178,24 +188,24 @@ class MinMaxComputerPlayer(Player):
                 elif evaluation == max_eval:
                     max_move.append(move)                    # if evaluation is the same as best add move to best moves
                 best_max = max(best_max, evaluation)         # save current best evaluation as best_max
-                board.write(move, 0)                         # undo the test move
+                board.clear_field(move)                         # undo the test move
                 board.check_win()
                 if evaluation > best_min:                   # if evaluation is better than other option for calling
                     break                                   # minimizing player - break the loop - beta
             return max_eval, max_move
         else:  # minimizing player
             for move in free_fields:
-                board.write(move, 3 - self.number)        # make a test move
+                board.write_field(move, 3 - self.mark)        # make a test move
                 board.check_win()
                 if board.win or len(board.free_fields) == 0:  # evaluate result if game is finished
                     evaluation = self.eval(board)
                     self.evaluations += 1
                 else:                                       # if game is not finish recursive call for max player
-                    evaluation, temp_move = self.min_max(board, self.number, best_max, best_min)
+                    evaluation, temp_move = self.min_max(board, self.mark, best_max, best_min)
                 min_eval = min(evaluation, min_eval)      # find the lowest evaluation
                 min_move = move                           # save min move - doesn't matter
                 best_min = min(best_min, evaluation)      # save current best evaluation for minimizer as best_min
-                board.write(move, 0)                      # undo the test move
+                board.clear_field(move)                      # undo the test move
                 board.check_win()
                 if evaluation < best_max:
                     break
@@ -204,9 +214,9 @@ class MinMaxComputerPlayer(Player):
     def eval(self, board):
         # evaluation of state on board if calling player is winner - positive if opponent - negative
         # no winner = 0, each free field + 1 point
-        if board.win and board.winner == self.number:
+        if board.win and board.winner == self.mark:
             return len(board.free_fields)+1
-        elif board.win and board.winner != self.number:
+        elif board.win and board.winner != self.mark:
             return (len(board.free_fields)+1)*-1
         else:
             return 0

@@ -18,7 +18,10 @@ class Game:
 
     def __init__(self):
         self.players = []
-        self.board = Board(3)
+        self.board = Board()
+        # Constants "X" player is 1, "O" player is 2
+        self.X_PLAYER = 1
+        self.O_PLAYER = 2
 
     def start(self, game_type_in=" "):
         # main game function
@@ -44,43 +47,48 @@ class Game:
             else:
                 raise Exception("Wrong function argument.")
         if type_ok:
+            # randomize player marks "X" and "O"
+            player_marks = random.sample([self.X_PLAYER, self.O_PLAYER], 2)
             if game_type == "1":
-                self.players.append(HumanPlayer(1))
-                self.players.append(HumanPlayer(2))
+                self.players.append(HumanPlayer(player_marks[0]))
+                self.players.append(HumanPlayer(player_marks[1]))
 
             elif game_type == "2":
-                plr_num = random.sample([1, 2], 2)      # randomize player numbers
-                self.players.append(ComputerPlayer(plr_num[0]))
-                self.players.append(HumanPlayer(plr_num[1]))
+                self.players.append(ComputerPlayer(player_marks[0]))
+                self.players.append(HumanPlayer(player_marks[1]))
 
             elif game_type == "3":
-                self.players.append(MinMaxComputerPlayer(1))
-                self.players.append(ComputerPlayer(2))
+                self.players.append(MinMaxComputerPlayer(player_marks[0]))
+                self.players.append(ComputerPlayer(player_marks[1]))
 
             elif game_type == "4":
-                plr_num = random.sample([1, 2], 2)      # randomize player numbers
-                self.players.append(MinMaxComputerPlayer(plr_num[0]))
-                self.players.append(HumanPlayer(plr_num[1]))
-            random.shuffle(self.players)         # randomize which player starts
+                self.players.append(MinMaxComputerPlayer(player_marks[0]))
+                self.players.append(HumanPlayer(player_marks[1]))
+            # randomize which player starts
+            random.shuffle(self.players)
             os.system('cls')
             print("\n")
+            # draw empty board
             self.board.draw()
-            while (not self.board.win) and len(self.board.free_fields) > 0:  # play until somebody wins or board is full
+            # play until somebody wins or board is full
+            while (not self.board.win) and len(self.board.free_fields) > 0:
                 for player in self.players:     # play each player
                     player.play(self.board)
                     self.board.draw()           # draw the board
-                    self.board.check_win()      # check if somebody won
+                    # check for possible winner
+                    self.board.check_win()
+                    # end inner loop if there are no more fields or victory was achieved - no turn for the second player
                     if len(self.board.free_fields) == 0 or self.board.win:
                         break
             if self.board.win:
                 print(f"Player {self.board.winner} won!")
                 result_logger.info(f"Games result is: {self.board.winner}\n"
-                                   f" Players:{self.players[0].number}:{self.players[0].player_type}"
-                                   f" {self.players[1].number}:{self.players[1].player_type}")
+                                   f" Players:{self.players[0].mark}:{self.players[0].player_type}"
+                                   f" {self.players[1].mark}:{self.players[1].player_type}")
                 return self.board.winner
             else:
                 print("The game has ended in a draw.")
                 result_logger.info(f"Games result is : 3\n"
-                                   f" Players:{self.players[0].number}:{self.players[0].player_type}"
-                                   f" {self.players[1].number}:{self.players[1].player_type}")
+                                   f" Players:{self.players[0].mark}:{self.players[0].player_type}"
+                                   f" {self.players[1].mark}:{self.players[1].player_type}")
                 return 3
