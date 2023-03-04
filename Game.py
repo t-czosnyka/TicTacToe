@@ -23,8 +23,9 @@ class Game:
         self.X_PLAYER = 1
         self.O_PLAYER = 2
 
-    def start(self, game_type_in=" "):
-        # main game function
+    def start(self, display_game=True, game_type_in=" "):
+        # main game function, default - choose game type from cli, if game type is not empty - choice will be skipped
+        # display game -if true game is displayed in cli with wait times
         type_ok = False
         if game_type_in == " ":
             while not type_ok:
@@ -50,44 +51,58 @@ class Game:
             # randomize player marks "X" and "O"
             player_marks = random.sample([self.X_PLAYER, self.O_PLAYER], 2)
             if game_type == "1":
+                # game is always displayed
+                display_game = True
+                # Create players with random marks
                 self.players.append(HumanPlayer(player_marks[0]))
                 self.players.append(HumanPlayer(player_marks[1]))
 
             elif game_type == "2":
+                # game is always displayed
+                display_game = True
+                # Create players with random marks
                 self.players.append(ComputerPlayer(player_marks[0]))
                 self.players.append(HumanPlayer(player_marks[1]))
 
             elif game_type == "3":
-                self.players.append(MinMaxComputerPlayer(player_marks[0]))
-                self.players.append(ComputerPlayer(player_marks[1]))
+                # Create players with random marks
+                self.players.append(MinMaxComputerPlayer(player_marks[0], display_game))
+                self.players.append(ComputerPlayer(player_marks[1], display_game))
 
             elif game_type == "4":
+                # game is always displayed
+                display_game = True
+                # Create players with random marks
                 self.players.append(MinMaxComputerPlayer(player_marks[0]))
                 self.players.append(HumanPlayer(player_marks[1]))
             # randomize which player starts
             random.shuffle(self.players)
             os.system('cls')
-            print("\n")
-            # draw empty board
-            self.board.draw()
+            if display_game:
+                print("\n")
+                # draw empty board
+                self.board.draw()
             # play until somebody wins or board is full
             while (not self.board.win) and len(self.board.free_fields) > 0:
                 for player in self.players:     # play each player
-                    player.play(self.board)
-                    self.board.draw()           # draw the board
+                    played_positions = player.play(self.board)
+                    if display_game:
+                        self.board.draw()           # draw the board
                     # check for possible winner
-                    self.board.check_win()
+                    self.board.check_win(played_positions)
                     # end inner loop if there are no more fields or victory was achieved - no turn for the second player
                     if len(self.board.free_fields) == 0 or self.board.win:
                         break
             if self.board.win:
-                print(f"Player {self.board.winner} won!")
+                if display_game:
+                    print(f"Player {self.board.winner} won!")
                 result_logger.info(f"Games result is: {self.board.winner}\n"
                                    f" Players:{self.players[0].mark}:{self.players[0].player_type}"
                                    f" {self.players[1].mark}:{self.players[1].player_type}")
                 return self.board.winner
             else:
-                print("The game has ended in a draw.")
+                if display_game:
+                    print("The game has ended in a draw.")
                 result_logger.info(f"Games result is : 3\n"
                                    f" Players:{self.players[0].mark}:{self.players[0].player_type}"
                                    f" {self.players[1].mark}:{self.players[1].player_type}")

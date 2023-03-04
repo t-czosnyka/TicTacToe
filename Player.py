@@ -6,9 +6,11 @@ import time
 
 class Player:
     # parent class for both types of players
-    def __init__(self, mark: int):
+    def __init__(self, mark: int, display_game=True):
         self.mark = mark
         self.player_type = " "
+        # display game - game with wait time
+        self.display_game = display_game
 
     def get_positions(self, board) -> tuple[int, int]:
         pass
@@ -19,22 +21,25 @@ class Player:
         played = False
         # repeat loop until correct positions are inserted
         while not played:
-            print(f"Player {self.mark} {self.player_type} turn: ")
+            if self.display_game:
+                print(f"Player {self.mark} {self.player_type} turn: ")
             # get positions
             positions = self.get_positions(board)
             # write field
-            if board.write_field((positions[0], positions[1]), self.mark):
+            if board.mark_field((positions[0], positions[1]), self.mark):
                 # exit loop if player successfully marked a field
                 played = True
-        # write information after player makes a move
-        os.system('cls')
-        print(f"Player {self.mark} played [{positions[1] + 1},{positions[0] + 1}].")
+        if self.display_game:
+            # write information after player makes a move
+            os.system('cls')
+            print(f"Player {self.mark} played [{positions[1] + 1},{positions[0] + 1}].")
+        return positions
 
 
 class ComputerPlayer(Player):
 
-    def __init__(self, mark: int):
-        super().__init__(mark)
+    def __init__(self, mark: int, display_game=True):
+        super().__init__(mark, display_game)
         self.player_type = "Computer"
 
     def get_positions(self, board):
@@ -107,15 +112,18 @@ class ComputerPlayer(Player):
             positions = random.choice(choices)
         elif prio == 100:
             positions = random.choice(board.free_fields)
-        time.sleep(3)
+        # wait 3s if game is displayed
+        if self.display_game:
+            time.sleep(3)
         return positions
 
 
 class HumanPlayer(Player):
 
-    def __init__(self, mark: int):
-        super().__init__(mark)
+    def __init__(self, mark: int, display_game=True):
+        super().__init__(mark, display_game)
         self.player_type = "Human"
+        self.display_game = True
 
     def get_positions(self, board):
         # Get position input from human player
@@ -138,10 +146,11 @@ class HumanPlayer(Player):
                 continue
             return positions[0], positions[1]
 
+
 class MinMaxComputerPlayer(Player):
 
-    def __init__(self, mark: int):
-        super().__init__(mark)
+    def __init__(self, mark: int, display_game=True):
+        super().__init__(mark, display_game)
         self.player_type = "MinMax Computer"
         self.evaluations = 0
 
@@ -163,7 +172,9 @@ class MinMaxComputerPlayer(Player):
             evaluation, choices = self.min_max(board, self.mark, -100, 100)
         choices = [value for value in board.free_fields if value in choices]  # take choices only if they are free field
         positions = random.choice(choices)
-        time.sleep(3)
+        # wait 3s if game is displayed
+        if self.display_game:
+            time.sleep(3)
         return positions
 
     def min_max(self, board, player, best_max, best_min):
