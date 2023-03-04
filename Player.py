@@ -185,8 +185,8 @@ class MinMaxComputerPlayer(Player):
         max_move = min_move = list()
         if player == self.mark:  # maximizing player
             for move in free_fields:
-                board.write_field(move, self.mark)                # make a test move
-                board.check_win()
+                board.mark_field(move, self.mark)                # make a test move
+                board.check_win(move)
                 if board.win or len(board.free_fields) == 0:  # evaluate result if game is finished
                     evaluation = self.eval(board)
                     self.evaluations += 1
@@ -200,14 +200,14 @@ class MinMaxComputerPlayer(Player):
                     max_move.append(move)                    # if evaluation is the same as best add move to best moves
                 best_max = max(best_max, evaluation)         # save current best evaluation as best_max
                 board.clear_field(move)                         # undo the test move
-                board.check_win()
+                board.reset_winner()
                 if evaluation > best_min:                   # if evaluation is better than other option for calling
                     break                                   # minimizing player - break the loop - beta
             return max_eval, max_move
         else:  # minimizing player
             for move in free_fields:
-                board.write_field(move, 3 - self.mark)        # make a test move
-                board.check_win()
+                board.mark_field(move, 3 - self.mark)        # make a test move
+                board.check_win(move)
                 if board.win or len(board.free_fields) == 0:  # evaluate result if game is finished
                     evaluation = self.eval(board)
                     self.evaluations += 1
@@ -217,7 +217,7 @@ class MinMaxComputerPlayer(Player):
                 min_move = move                           # save min move - doesn't matter
                 best_min = min(best_min, evaluation)      # save current best evaluation for minimizer as best_min
                 board.clear_field(move)                      # undo the test move
-                board.check_win()
+                board.reset_winner()
                 if evaluation < best_max:
                     break
             return min_eval, min_move
