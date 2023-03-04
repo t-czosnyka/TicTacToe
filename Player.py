@@ -132,7 +132,7 @@ class HumanPlayer(Player):
             if ',' not in user_input:
                 print("Wrong format.")
                 continue
-            positions = user_input.split(',')
+            positions = user_input.split(',', 1)
             if not positions[0].isdecimal() or not positions[1].isdecimal():
                 print("Wrong format.")
                 continue
