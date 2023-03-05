@@ -5,11 +5,11 @@ import time
 
 
 class Player:
-    # parent class for both types of players
+    # Base class for other types of players
     def __init__(self, mark: int, display_game=True):
         self.mark = mark
         self.player_type = " "
-        # display game - game with wait time
+        # display game - game to be displayed in console, else only record a result
         self.display_game = display_game
 
     def get_positions(self, board) -> tuple[int, int]:
@@ -37,97 +37,121 @@ class Player:
 
 
 class ComputerPlayer(Player):
+    # Regular computer player, playing with simple algorithm
 
     def __init__(self, mark: int, display_game=True):
         super().__init__(mark, display_game)
         self.player_type = "Computer"
+        self.current_priority = 100     # priority of available positions
+        self.current_choices = []    # available positions to play
 
-    def get_positions(self, board):
+
+    def get_positions(self, board: Board):
         # function to choose where to play based on current situation on board
-        choices = list()
-        positions = list()
-        prio = 100  # action priority - smaller -> more important
-        corners = [(0, 0), (0, board.size - 1), (board.size - 1, 0), (board.size - 1, board.size - 1)]
-        # first move - center or corners
-        if len(board.free_fields) >= 8:
-            prio = 50
-            # all corners free
-            if all([item in board.free_fields for item in corners]):
-                choices = corners + [(1, 1)]
-            # opponent took corner play center
-            elif board.check_empty((1, 1)):
-                choices = [(1, 1)]
-            # play corners
+        # initialize choices
+        self.current_priority = 100  # position priority - smaller -> more important
+        self.current_choices = []    # choices for current priority
+        # Starting first:
+        if len(board.free_fields) == 9:
+            # start in the corner
+            self.current_priority = 50
+            self.current_choices = board.corners
+        # Starting second:
+        if len(board.free_fields) == 8:
+            self.current_priority = 50
+            # opponent started in the center - play in the corner
+            if not board.check_empty((1, 1)):
+                self.current_choices = board.corners
+            # in other cases take center
             else:
-                choices = corners
-        # Next moves
+                self.current_choices = [(1, 1)]
+        # Next moves - evaluate situation in each of 8 lines that can lead to victory
+        # Each situation has priority - lower = most important,
+        # If situation occurs compare its priority with current priority:
+        # - If it has lower priority(more important) - overwrite available choices and current priority
+        # - If it has the same priority add free fields in this line to current choices
+        # - If it has higher priority - do nothing
         elif len(board.free_fields) < 8:
             # Evaluate situation on board
-            not_full_lines = list()
-            # get information from every line on board
-            for i in range(1, 9):
-                line = board.check_line(i)
-                # save line if it is not full
-                if len(line[2]) != 0:
-                    not_full_lines.append(line)
+            not_full_lines, not_full_lines_ids = board.check_available_lines()
             # evaluate not full lines
-            for line_1 in not_full_lines:
-                if line_1[self.mark - 1] == 2 and line_1[2 - self.mark] == 0:  # Victory possible prio = 1
-                    if prio > 10:
-                        choices.clear()
-                        prio = 10
-                    if prio == 10:
-                        choices = choices + line_1[2]
-                elif line_1[self.mark - 1] == 0 and line_1[2 - self.mark] == 2 and prio >= 2:  # Block defeat prio=2
-                    if prio > 20:
-                        choices.clear()
-                        prio = 20
-                    if prio == 20:
-                        choices = choices + line_1[2]
-                elif line_1[self.mark - 1] == 1 and line_1[2 - self.mark] == 0 and line_1[3] <= 6 \
-                        and len(board.free_fields) == 6 and not board.check_empty((1, 1)):  # special case
-                    if prio > 25:
-                        choices.clear()
-                        prio = 25
-                    if prio == 25:
-                        choices = choices + line_1[2]
-
-                elif line_1[self.mark - 1] == 1 and line_1[2 - self.mark] == 0:  # Play in a most promising line
-                    if prio > 30:
-                        line_corners = [value for value in line_1[2] if value in corners]  # find free corner to play
-                        if len(line_corners) > 0:
-                            prio = 30
-                            choices.clear()
-                        if prio == 30:
-                            choices = choices + line_corners
-                    if prio > 40:
-                        prio = 40
-                        choices.clear()
-                    if prio == 40:
-                        choices = choices + line_1[2]
-                # print("Prio: ", prio, choices)
-        # print(choices)
-        if prio < 100:
-            choices = [value for value in board.free_fields if value in choices]
-            positions = random.choice(choices)
-        elif prio == 100:
+            for line in not_full_lines:
+                line_free_fields = line[2]
+                # Situation 1: Victory possible in next move - the highest priority 10
+                if line[self.mark - 1] == 2 and line[2 - self.mark] == 0:
+                    self.compare_priority(10, line_free_fields)
+                # Situation 2: Defeat possible in next move - priority 20
+                elif line[self.mark - 1] == 0 and line[2 - self.mark] == 2:
+                    self.compare_priority(20, line_free_fields)
+                # Situation 3: Play in the most promising line - with 1 own mark and no opponent marks
+                elif line[self.mark - 1] == 1 and line[2 - self.mark] == 0:
+                    self.compare_priority(30, line_free_fields)
+            # Special case don't play corners in this situation(own = "O")
+            # X |   |
+            # ----------
+            #   | O |
+            # ----------
+            #   |   | X
+            # check if 6 fields are free and one diagonal is full
+            if len(board.free_fields) == 6 and (7 not in not_full_lines_ids or 8 not in not_full_lines_ids):
+                # remove corners from choices
+                self.current_choices = [choice for choice in self.current_choices if choice not in board.corners]
+            if self.current_priority == 30:
+                # further evaluate current choices
+                self.current_choices = self.evaluate_field(self.current_choices, board, not_full_lines)
+        # Priority found - select random field from available choices
+        if self.current_priority < 100:
+            positions = random.choice(self.current_choices)
+        # No priority found - play random free field
+        else:
             positions = random.choice(board.free_fields)
         # wait 3s if game is displayed
         if self.display_game:
             time.sleep(3)
         return positions
 
+    def compare_priority(self, situation_priority: int, situation_choices: list):
+        # Compare situation priority with current priority:
+        # Better situation found overwrite priority and choices
+        if self.current_priority > situation_priority:
+            self.current_priority = situation_priority
+            self.current_choices = situation_choices
+        # Equal priority found and situation choices to current choices
+        elif self.current_priority == situation_priority:
+            self.current_choices = self.current_choices + situation_choices
+
+    def evaluate_field(self, fields, board, line_data):
+        # select fields that additionally block opponent lines
+        # score is number of opponent lines blocked in this field
+        # return fields with max score
+        max_score = 0
+        best_fields = []
+        for field in fields:
+            score = 0
+            for line_id in board.get_line_ids_from_field(field):
+                line = board.check_line(line_id)
+                if line[self.mark - 1] == 0 and line[2 - self.mark] == 1:
+                    score += 1
+            if score > max_score:
+                best_fields = [field]
+                max_score = score
+            elif score == max_score:
+                best_fields.append(field)
+        return best_fields
+
 
 class HumanPlayer(Player):
-
+    # Human player - moves inserted from command line
     def __init__(self, mark: int, display_game=True):
         super().__init__(mark, display_game)
         self.player_type = "Human"
+        # Human player always displays game
         self.display_game = True
 
     def get_positions(self, board):
-        # Get position input from human player
-        while True:  # Repeat until correct value received
+        # Get position input from human player, correct input: x_pos,y_pos
+        # Repeat until correct value received
+        while True:
             user_input = input("Input position, format: \"x,y\", range 1-3: ")
             if ',' not in user_input:
                 print("Wrong format.")
@@ -148,7 +172,7 @@ class HumanPlayer(Player):
 
 
 class MinMaxComputerPlayer(Player):
-
+    # Computer player using MinMax algorithm to play
     def __init__(self, mark: int, display_game=True):
         super().__init__(mark, display_game)
         self.player_type = "MinMax Computer"
@@ -188,7 +212,7 @@ class MinMaxComputerPlayer(Player):
                 board.mark_field(move, self.mark)                # make a test move
                 board.check_win(move)
                 if board.win or len(board.free_fields) == 0:  # evaluate result if game is finished
-                    evaluation = self.eval(board)
+                    evaluation = self.evaluate_board(board)
                     self.evaluations += 1
                 else:                                          # if game is not finish recursive call for min player
                     evaluation, temp_move = self.min_max(board, 3 - self.mark, best_max, best_min)
@@ -209,7 +233,7 @@ class MinMaxComputerPlayer(Player):
                 board.mark_field(move, 3 - self.mark)        # make a test move
                 board.check_win(move)
                 if board.win or len(board.free_fields) == 0:  # evaluate result if game is finished
-                    evaluation = self.eval(board)
+                    evaluation = self.evaluate_board(board)
                     self.evaluations += 1
                 else:                                       # if game is not finish recursive call for max player
                     evaluation, temp_move = self.min_max(board, self.mark, best_max, best_min)
@@ -222,9 +246,11 @@ class MinMaxComputerPlayer(Player):
                     break
             return min_eval, min_move
 
-    def eval(self, board):
-        # evaluation of state on board if calling player is winner - positive if opponent - negative
-        # no winner = 0, each free field + 1 point
+    def evaluate_board(self, board):
+        # evaluation of state on board, return score
+        # no winner: score = 0
+        # self is winner: +1 point + 1 for each free field
+        # opponent is winner: -1 point -1 for each free field
         if board.win and board.winner == self.mark:
             return len(board.free_fields)+1
         elif board.win and board.winner != self.mark:
