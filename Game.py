@@ -81,29 +81,26 @@ class Game:
             if display_game:
                 print("\n")
                 # draw empty board
-                self.board.draw()
+                print(self.board)
             # play until somebody wins or board is full
             while (not self.board.win) and len(self.board.free_fields) > 0:
                 for player in self.players:     # play each player
                     played_positions = player.play(self.board)
+                    # draw the board
                     if display_game:
-                        self.board.draw()           # draw the board
+                        #drawing = self.board.draw()
+                        print(self.board)
                     # check for possible winner
                     self.board.check_win(played_positions)
                     # end inner loop if there are no more fields or victory was achieved - no turn for the second player
                     if len(self.board.free_fields) == 0 or self.board.win:
                         break
-            if self.board.win:
-                if display_game:
-                    print(f"Player {self.board.winner} won!")
-                result_logger.info(f"Games result is: {self.board.winner}\n"
-                                   f" Players:{self.players[0].mark}:{self.players[0].player_type}"
-                                   f" {self.players[1].mark}:{self.players[1].player_type}")
-                return self.board.winner
-            else:
-                if display_game:
-                    print("The game has ended in a draw.")
-                result_logger.info(f"Games result is : 3\n"
-                                   f" Players:{self.players[0].mark}:{self.players[0].player_type}"
-                                   f" {self.players[1].mark}:{self.players[1].player_type}")
-                return 3
+            if self.board.win and display_game:
+                print(f"Player {self.board.winner} won!")
+            elif display_game:
+                print("The game has ended in a draw.")
+            result_logger.info(f"Games result is: {self.board.winner}\n"
+                               f" Players:{self.players[0].mark}:{self.players[0].player_type}"
+                               f" {self.players[1].mark}:{self.players[1].player_type}\n"
+                               + str(self.board))
+

@@ -21,7 +21,20 @@ class Board:
         self.HORIZONTAL_LINES = [4, 5, 6]
         self.FIRST_DIAGONAL_LINE = [7]
         self.SECOND_DIAGONAL_LINE = [8]
+        self.corners = [(0, 0), (0, self.size - 1), (self.size - 1, 0), (self.size - 1, self.size - 1)]
 
+    def __str__(self):
+        drawing = str()
+        # draw current situation on board
+        for y in range(len(self.fields)):
+            for x in range(len(self.fields[y])):
+                drawing = drawing + self.read_field((y, x))
+                if x != 2:
+                    drawing = drawing + "|"
+            if y != 2:
+                drawing = drawing + "\n-----\n"
+        drawing = drawing + "\n"
+        return drawing
 
     def read_field(self, pos: tuple[int, int]) -> str:
         # read field value
@@ -75,26 +88,15 @@ class Board:
             value = self.read_field(field_position)
             # add to player value if it is taken or save its position if it is empty
             if value == 'X':
-                x_player += 1
+                x_player_score += 1
             elif value == 'O':
-                o_player += 1
+                o_player_score += 1
             else:
                 empty_fields_in_line.append(field_position)
         # after finished loop return result
-        return x_player, o_player, empty_fields_in_line, line_id
+        return x_player_score, o_player_score, empty_fields_in_line, line_id
 
-    def draw(self):
-        # draw current situation on board
-        for y in range(len(self.fields)):
-            for x in range(len(self.fields[y])):
-                print(self.read_field((y, x)), end="")
-                if x != 2:
-                    print("|", end="")
-            if y != 2:
-                print("\n-----")
-        print("\n")
-
-    def get_line_ids_from_field(self, pos: tuple[int, int]):
+    def get_line_ids_from_field(self, pos: tuple[int, int]) -> list:
         # based on fields position return list of line_ids it belongs to
         # line_id == 1, 2, 3: vertical lines, line_id == 4, 5, 6 horizontal, line_id == 7, 8 diagonal
         # vertical and horizontal line
