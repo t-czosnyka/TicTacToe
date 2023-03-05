@@ -65,8 +65,8 @@ class Board:
     def check_line(self, line_id: int) -> (int, int, list, int):
         # check situation in given line, return amount of field belonging to each player and empty fields in each line
         # line_id == 1, 2, 3: vertical lines, line_id == 4, 5, 6 horizontal, line_id == 7, 8 diagonal
-        x_player = 0
-        o_player = 0
+        x_player_score = 0
+        o_player_score = 0
         empty_fields_in_line = list()
         field_position = (0, 0)
         # check every field in line
@@ -124,15 +124,34 @@ class Board:
         line_ids = self.get_line_ids_from_field(pos)
         # check lines
         for line_id in line_ids:
-            result = self.check_line(line_id)
+            x_player_score, o_player_score, empty_fields_in_line, line_id = self.check_line(line_id)
             # if line is fully marked by player than player won
-            if result[0] == self.size:
+            if x_player_score == self.size:
                 self.win = True
                 self.winner = self.X_PLAYER
                 break
-            elif result[1] == self.size:
+            elif o_player_score == self.size:
                 self.win = True
                 self.winner = self.O_PLAYER
                 break
         # return result after loop is ended
         return self.win
+
+    def check_available_lines(self):
+        # function to check situation in not full lines on the board
+        # called by player before making a move
+        # return list of evaluations of each line and id_s of available lines
+        line_data = []
+        # get available lines
+        if len(self.free_fields) <= 6:
+            available_lines = set()
+            for field in self.free_fields:
+                available_lines.update(self.get_line_ids_from_field(field))
+                if len(available_lines) == 8:
+                    break
+        # less than 3 fields taken - all lines are available
+        else:
+            available_lines = range(1, 9)
+        for line_id in available_lines:
+            line_data.append(self.check_line(line_id))
+        return line_data, available_lines

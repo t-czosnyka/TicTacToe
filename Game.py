@@ -27,7 +27,9 @@ class Game:
         # main game function, default - choose game type from cli, if game type is not empty - choice will be skipped
         # display game -if true game is displayed in cli with wait times
         type_ok = False
+        # ask user to insert game type from command line
         if game_type_in == " ":
+            # repeat until correct type is inserted
             while not type_ok:
                 os.system('cls')
                 print("Choose game type:\n \
@@ -41,34 +43,38 @@ class Game:
                     type_ok = True
                 else:
                     print("Wrong game type.")
+        # game type inserted as argument
         else:
+            # check if correct argument is inserted - if not raise exception
             if game_type_in in ["1", "2", "3", "4"]:
                 type_ok = True
                 game_type = game_type_in
             else:
                 raise Exception("Wrong function argument.")
+        # correct game type - start game
         if type_ok:
             # randomize player marks "X" and "O"
             player_marks = random.sample([self.X_PLAYER, self.O_PLAYER], 2)
+            # Game type 1: Human vs Human
             if game_type == "1":
                 # game is always displayed
                 display_game = True
                 # Create players with random marks
                 self.players.append(HumanPlayer(player_marks[0]))
                 self.players.append(HumanPlayer(player_marks[1]))
-
+            # Game type 2: Human vs Regular Computer
             elif game_type == "2":
                 # game is always displayed
                 display_game = True
                 # Create players with random marks
                 self.players.append(ComputerPlayer(player_marks[0]))
                 self.players.append(HumanPlayer(player_marks[1]))
-
+            # Game type 3: MinMax Computer vs Regular Computer
             elif game_type == "3":
                 # Create players with random marks
                 self.players.append(MinMaxComputerPlayer(player_marks[0], display_game))
                 self.players.append(ComputerPlayer(player_marks[1], display_game))
-
+            # Game type 4: Human vs MinMax Computer
             elif game_type == "4":
                 # game is always displayed
                 display_game = True
@@ -88,7 +94,6 @@ class Game:
                     played_positions = player.play(self.board)
                     # draw the board
                     if display_game:
-                        #drawing = self.board.draw()
                         print(self.board)
                     # check for possible winner
                     self.board.check_win(played_positions)
@@ -103,4 +108,5 @@ class Game:
                                f" Players:{self.players[0].mark}:{self.players[0].player_type}"
                                f" {self.players[1].mark}:{self.players[1].player_type}\n"
                                + str(self.board))
+            return self.board.winner
 
