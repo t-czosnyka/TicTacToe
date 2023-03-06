@@ -47,17 +47,7 @@ class Game:
             # draw empty board
             print(self.board)
         # play until somebody wins or board is full
-        while (not self.board.win) and len(self.board.free_fields) > 0:
-            for player in self.players:     # play each player
-                played_positions = player.play(self.board)
-                # draw the board
-                if display_game:
-                    print(self.board)
-                # check for possible winner
-                self.board.check_win(played_positions)
-                # end inner loop if there are no more fields or victory was achieved - no turn for the second player
-                if len(self.board.free_fields) == 0 or self.board.win:
-                    break
+        self.play(display_game)
         # Game is finished
         # Someone Won
         if self.board.win and display_game:
@@ -130,3 +120,18 @@ class Game:
             self.players.append(HumanPlayer(player_marks[1]))
         # randomize which player starts
         random.shuffle(self.players)
+
+    def play(self, display_game):
+        # call play functions of each player in a loop until game is finished
+        while True:
+            # play each of two players
+            for player in self.players:
+                played_positions = player.play(self.board)
+                # draw the board
+                if display_game:
+                    print(self.board)
+                # check for possible winner
+                self.board.check_win(played_positions)
+                # end inner loop if there are no more fields or victory was achieved - no turn for the second player
+                if len(self.board.free_fields) == 0 or self.board.win:
+                    return
