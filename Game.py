@@ -1,7 +1,6 @@
 import os
 import logging
 import random
-
 from Board import Board
 from Player import HumanPlayer, ComputerPlayer, MinMaxComputerPlayer
 
@@ -26,29 +25,10 @@ class Game:
     def start(self, display_game=True, game_type_in=" "):
         # main game function, default - choose game type from cli, if game type is not empty - choice will be skipped
         # display game -if true game is displayed in cli with wait times
-        type_ok = False
-        # game type inserted as argument
-        if game_type_in in ["1", "2", "3", "4"]:
-            game_type = game_type_in
-        # no game type as argument - ask user to insert game type from command line
-        elif game_type_in == " ":
-            # repeat until correct type is inserted
-            while not type_ok:
-                os.system('cls')
-                print("Choose game type:\n \
-                1 - Player vs Player\n \
-                2 - Player vs Computer\n \
-                3 - Computer vs MinMaxComputer\n \
-                4 - Player vs MinMaxComputer\n")
-                game_type = input()
-                os.system('cls')
-                if game_type in ["1", "2", "3", "4"]:
-                    type_ok = True
-                else:
-                    print("Wrong game type.")
-        # Raise exception if wrong game type was passed as argument
-        else:
-            raise Exception(f"Wrong function argument: {game_type_in}")
+        # get game type
+        type_ok, game_type = self.get_game_type(game_type_in)
+        if not type_ok:
+            raise Exception("Wrong game type passed as argument")
         # correct game type - start game
         # randomize player marks "X" and "O"
         player_marks = random.sample([self.X_PLAYER, self.O_PLAYER], 2)
@@ -111,4 +91,31 @@ class Game:
                            + str(self.board))
         # return winner
         return self.board.winner
+    @staticmethod
+    def get_game_type(game_type_in):
+        # get game type as function argument or inserted by user
+        type_ok = False
+        game_type = ""
+        # game type inserted as argument
+        if game_type_in != " ":
+            if game_type_in in ["1", "2", "3", "4"]:
+                game_type = game_type_in
+                type_ok = True
+            return type_ok, game_type
+        # no game type as argument - ask user to insert game type from command line
+        # repeat until correct type is inserted
+        while not type_ok:
+            os.system('cls')
+            print("Choose game type:\n \
+                   1 - Player vs Player\n \
+                   2 - Player vs Computer\n \
+                   3 - Computer vs MinMaxComputer\n \
+                   4 - Player vs MinMaxComputer\n")
+            game_type = input()
+            os.system('cls')
+            if game_type in ["1", "2", "3", "4"]:
+                type_ok = True
+            else:
+                print("Wrong game type.")
+        return type_ok, game_type
 
