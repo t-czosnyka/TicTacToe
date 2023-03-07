@@ -110,7 +110,7 @@ class Board:
         return line_ids
 
     def reset_winner(self):
-        # reset board winner - used for reversing test moves for Minmax
+        # reset board winner - used for reversing test moves for Minimax
         self.win = False
         self.winner = 0
 

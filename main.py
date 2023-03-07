@@ -1,6 +1,5 @@
 from Game import Game
 
-
 def test_game():
     # test computer vs MinMax Computer game without display, return winner number
     game = Game()
@@ -17,7 +16,9 @@ if __name__ == '__main__':
     main()
     # testing 100 games
     # draws = 0
+    # t1 = timeit.default_timer()
     # for _ in range(100):
     #     if test_game() == 0:
     #         draws += 1
-    # print(draws)
+    # t2 = timeit.default_timer()
+    # print(f"Draws: {draws}, Time: {t2-t1}")

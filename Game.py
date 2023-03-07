@@ -2,7 +2,7 @@ import os
 import logging
 import random
 from Board import Board
-from Player import HumanPlayer, ComputerPlayer, MinMaxComputerPlayer
+from Player import HumanPlayer, ComputerPlayer, MiniMaxComputerPlayer
 
 # logging results
 result_logger = logging.getLogger(__name__)
@@ -24,8 +24,8 @@ class Game:
         # Constants Game types
         self.GAME_TYPE_H_VS_H = "1"  # Human vs Human
         self.GAME_TYPE_H_VS_C = "2"  # Human vs Computer
-        self.GAME_TYPE_C_VS_MM = "3"  # Computer vs MinMax Computer
-        self.GAME_TYPE_H_VS_MM = "4"  # Human vs MinMax Computer
+        self.GAME_TYPE_C_VS_MM = "3"  # Computer vs MiniMax Computer
+        self.GAME_TYPE_H_VS_MM = "4"  # Human vs MiniMax Computer
         self.GAME_TYPES = [self.GAME_TYPE_H_VS_H, self.GAME_TYPE_H_VS_C, self.GAME_TYPE_C_VS_MM, self.GAME_TYPE_H_VS_MM]
 
     def start(self, display_game=True, game_type_in=" ") -> int:
@@ -110,13 +110,13 @@ class Game:
         # Game type 3: Regular Computer vs MinMax Computer
         elif game_type == self.GAME_TYPE_C_VS_MM:
             # Create players with random marks
-            self.players.append(MinMaxComputerPlayer(player_marks[0], display_game))
+            self.players.append(MiniMaxComputerPlayer(player_marks[0], display_game))
             self.players.append(ComputerPlayer(player_marks[1], display_game))
         # Game type 4: Human vs MinMax Computer
         elif game_type == self.GAME_TYPE_H_VS_MM:
             # game is always displayed
             # Create players with random marks
-            self.players.append(MinMaxComputerPlayer(player_marks[0]))
+            self.players.append(MiniMaxComputerPlayer(player_marks[0]))
             self.players.append(HumanPlayer(player_marks[1]))
         # randomize which player starts
         random.shuffle(self.players)
