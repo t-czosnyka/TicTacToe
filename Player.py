@@ -230,9 +230,6 @@ class MiniMaxComputerPlayer(Player):
                 if evaluation > max_eval:
                     max_eval = evaluation
                     max_move = [move]
-                # if evaluation is equal to current max - add current move to max moves
-                elif evaluation == max_eval:
-                    max_move.append(move)
                 # update alpha
                 alpha = max(alpha, evaluation)
                 # Backtrack - remove the current move and get to the next one
@@ -240,7 +237,7 @@ class MiniMaxComputerPlayer(Player):
                 board.reset_winner()
                 # Pruning - current evaluation is already worse(for calling player) than already available option
                 # - don't check other options.
-                if evaluation > beta:
+                if evaluation >= beta:
                     break
             return max_eval, max_move
         # Minimizing player - looking to minimize the evaluation score
@@ -267,7 +264,7 @@ class MiniMaxComputerPlayer(Player):
                 board.reset_winner()
                 # Pruning - current evaluation is already worse(for calling player) than already available option
                 # - don't check other options.
-                if evaluation < alpha:
+                if evaluation <= alpha:
                     break
             return min_eval, min_move
 

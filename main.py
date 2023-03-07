@@ -1,4 +1,5 @@
 from Game import Game
+import timeit
 
 def test_game():
     # test computer vs MinMax Computer game without display, return winner number
