@@ -55,13 +55,13 @@ class ComputerPlayer(Player):
         if len(board.free_fields) == 9:
             # start in the corner
             self.current_priority = 50
-            self.current_choices = board.corners
+            self.current_choices = board.CORNERS
         # Starting second:
         if len(board.free_fields) == 8:
             self.current_priority = 50
             # opponent started in the center - play in the corner
             if not board.check_empty((1, 1)):
-                self.current_choices = board.corners
+                self.current_choices = board.CORNERS
             # in other cases take center
             else:
                 self.current_choices = [(1, 1)]
@@ -95,7 +95,7 @@ class ComputerPlayer(Player):
             # check if 6 fields are free and one diagonal is full
             if len(board.free_fields) == 6 and (7 not in not_full_lines_ids or 8 not in not_full_lines_ids):
                 # remove corners from choices
-                self.current_choices = [choice for choice in self.current_choices if choice not in board.corners]
+                self.current_choices = [choice for choice in self.current_choices if choice not in board.CORNERS]
             if self.current_priority == 30:
                 # further evaluate current choices
                 self.current_choices = self.evaluate_field(self.current_choices, board)
@@ -184,89 +184,89 @@ class MiniMaxComputerPlayer(Player):
             choices = board.free_fields
         # next moves - use MiniMax algorithm
         else:
-            evaluation, choices = self.mini_max(board, self.mark, -100, 100, 1)
+            evaluation, choices = self.max_player(board,-100, 100)
         positions = random.choice(choices)
         # wait 3s if game is displayed
         if self.display_game:
             time.sleep(3)
         return positions
+    ############################################################################################################
+    # Minimax algorithm tests every available move in current situation on board by simulating how game would go
+    # following that move assuming opposing player chooses the best possible options for him. Game is simulated by
+    # max_player/min_player functions recursively calling each other until game ends.
+    # Calling player is maximizing player, simulated opponent is minimizing player.
+    # Maximizing player chooses the highest possible evaluation, while minimizing player chooses lowest.
+    ###################################################################################################
+    # alpha - evaluation score of best already available option for Max player.
+    # beta - evaluation score best already available option for Min player.
+    # Used for pruning if calling player already has better option than the best possible option on current path -
+    # don't evaluate other options on that path.
 
-    def mini_max(self, board, player_mark, alpha, beta, depth):
-        # Minimax algorithm function to be called recursively. Returns list of best moves and its evaluation.
-        # Minimax algorithm tests every available move in current situation on board by simulating how game would go
-        # following that move assuming opposing player chooses the best possible options for him.
-        # Calling player is maximizing player, simulated opponent is minimizing player.
-        # Maximizing player chooses the highest possible evaluation, while minimizing player chooses lowest.
-        ###################################################################################################
-        # alpha - evaluation of best already available option for Max player.
-        # beta - evaluation of best already available option for Min player.
-        # Used for pruning if calling player already has better option than the best possible option on current path -
-        # don't evaluate other options on that path.
-        ###################################################################################################
+    def max_player(self, board, alpha, beta):
+        # Maximizing player - looking to maximize the evaluation score
         # board - Board class indicates current situation on board
-        # player_mark - indicates which player is making a move maximizing/minimizing
         # make a copy of current free fields
         free_fields = copy.copy(board.free_fields)
-        # initialize variables
         max_eval = -100
-        min_eval = 100
-        max_move = list()
-        min_move = list()
-        # Maximizing player - looking to maximize the evaluation score
-        if player_mark == self.mark:
-            # Test every possible move
-            for move in free_fields:
-                # Make a test move
-                board.mark_field(move, self.mark)
-                board.check_win(move)
-                # If the game is finished evaluate result
-                if board.win or len(board.free_fields) == 0:
-                    evaluation = self.evaluate_board(board)
-                # If the game is not finished recursive call for the min player
-                else:
-                    evaluation, temp_move = self.mini_max(board, 3 - self.mark, alpha, beta, depth+1)
-                # Get here after evaluation is available
-                # if evaluation is higher than current max - update max and save current move as max move
-                if evaluation > max_eval:
-                    max_eval = evaluation
-                    max_move = [move]
-                # update alpha
-                alpha = max(alpha, evaluation)
-                # Backtrack - remove the current move and get to the next one
-                board.clear_field(move)
-                board.reset_winner()
-                # Pruning - current evaluation is already worse(for calling player) than already available option
-                # - don't check other options.
-                if evaluation >= beta:
-                    break
-            return max_eval, max_move
+        max_move = []
+        # Test every possible move
+        for move in free_fields:
+            # Make a test move
+            board.mark_field(move, self.mark)
+            board.check_win(move)
+            # If the game is finished evaluate result
+            if board.win or len(board.free_fields) == 0:
+                evaluation = self.evaluate_board(board)
+            # If the game is not finished recursive call for the min player
+            else:
+                evaluation, temp_move = self.min_player(board, alpha, beta)
+            # Get here after evaluation is available
+            # if evaluation is higher than current max - update max and save current move as max move
+            if evaluation > max_eval:
+                max_eval = evaluation
+                max_move = [move]
+            # update alpha
+            alpha = max(alpha, evaluation)
+            # Backtrack - remove the current move and get to the next one
+            board.clear_field(move)
+            board.reset_winner()
+            # Pruning - current evaluation is already worse(for calling player) than already available option
+            # - don't check other options.
+            if evaluation >= beta:
+                break
+        return max_eval, max_move
+
+    def min_player(self, board, alpha, beta):
         # Minimizing player - looking to minimize the evaluation score
-        else:
-            # Test every possible move
-            for move in free_fields:
-                # Make a test move
-                board.mark_field(move, 3 - self.mark)
-                board.check_win(move)
-                # If the game is finished evaluate result
-                if board.win or len(board.free_fields) == 0:
-                    evaluation = self.evaluate_board(board)
-                # If the game is not finished recursive call for the maximizing player
-                else:
-                    evaluation, temp_move = self.mini_max(board, self.mark, alpha, beta, depth+1)
-                # Get here after evaluation is available
-                # Find the current lowest evaluation
-                min_eval = min(evaluation, min_eval)
-                min_move = move
-                # update beta
-                beta = min(beta, evaluation)
-                # Backtrack - remove the current move and get to the next one
-                board.clear_field(move)
-                board.reset_winner()
-                # Pruning - current evaluation is already worse(for calling player) than already available option
-                # - don't check other options.
-                if evaluation <= alpha:
-                    break
-            return min_eval, min_move
+        # make a copy of current free fields
+        free_fields = copy.copy(board.free_fields)
+        min_eval = 100
+        min_move = []
+        # Test every possible move
+        for move in free_fields:
+            # Make a test move
+            board.mark_field(move, 3 - self.mark)
+            board.check_win(move)
+            # If the game is finished evaluate result
+            if board.win or len(board.free_fields) == 0:
+                evaluation = self.evaluate_board(board)
+            # If the game is not finished recursive call for the maximizing player
+            else:
+                evaluation, temp_move = self.max_player(board, alpha, beta)
+            # Get here after evaluation is available
+            # Find the current lowest evaluation
+            min_eval = min(evaluation, min_eval)
+            min_move = move
+            # update beta
+            beta = min(beta, evaluation)
+            # Backtrack - remove the current move and get to the next one
+            board.clear_field(move)
+            board.reset_winner()
+            # Pruning - current evaluation is already worse(for calling player) than already available option
+            # - don't check other options.
+            if evaluation <= alpha:
+                break
+        return min_eval, min_move
 
     def evaluate_board(self, board):
         # evaluation of state on board, return score

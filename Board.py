@@ -14,14 +14,17 @@ class Board:
                 self.free_fields.append((i, j))
         self.win = False
         self.winner = 0
-        # Constants "X" player is 1, "O" player is 2
+        # Constants
         self.X_PLAYER = 1
         self.O_PLAYER = 2
         self.VERTICAL_LINES = [1, 2, 3]
         self.HORIZONTAL_LINES = [4, 5, 6]
         self.FIRST_DIAGONAL_LINE = [7]
         self.SECOND_DIAGONAL_LINE = [8]
-        self.corners = [(0, 0), (0, self.size - 1), (self.size - 1, 0), (self.size - 1, self.size - 1)]
+        self.CORNERS = [(0, 0), (0, self.size - 1), (self.size - 1, 0), (self.size - 1, self.size - 1)]
+        self.CENTER = [(self.size % 2, self.size % 2)]
+        # free fields - used as potential choices for MiniMax algorithm - center and corners first as optimization
+        self.free_fields = self.CENTER + self.CORNERS + [(0, 1), (1, 0), (2, 1), (1, 2)]
 
     def __str__(self):
         drawing = str()
