@@ -1,14 +1,16 @@
-# TicTacToe
+<h1>TicTacToe</h1>
+
 This my version of command line game of Tic Tac Toe. 
 Project idea from: https://www.youtube.com/watch?v=8ext9G7xspg&t=5033s
+
 Features:
 - 3 Player types: Human, Regular Computer, MiniMax Computer,
 - 4 game modes: Player vs Player, Player vs Regular Computer, Player vs MiniMax Computer, 
   Regular Computer vs MiniMax Computer,
 - Logging result into text file with drawing of the board,
 - Test mode allowing to see results of multiple games between computer players.
-<h2>Screenshots:</h2>
 
+<h2>Screenshots:</h2>
 
 <p>Available game modes:</p>
 <img src="https://github.com/t-czosnyka/TicTacToe/assets/115980948/c3f4ae9b-48bd-409b-b240-15b954201544" style="height:200px">
