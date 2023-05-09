@@ -81,8 +81,8 @@ class Game:
             print("Choose game type:\n \
                    1 - Player vs Player\n \
                    2 - Player vs Computer\n \
-                   3 - Computer vs MinMaxComputer\n \
-                   4 - Player vs MinMaxComputer\n")
+                   3 - Computer vs MiniMaxComputer\n \
+                   4 - Player vs MiniMaxComputer\n")
             game_type = input()
             os.system('cls')
             if game_type in self.GAME_TYPES:
@@ -107,12 +107,12 @@ class Game:
             # Create players with random marks
             self.players.append(ComputerPlayer(player_marks[0]))
             self.players.append(HumanPlayer(player_marks[1]))
-        # Game type 3: Regular Computer vs MinMax Computer
+        # Game type 3: Regular Computer vs MiniMax Computer
         elif game_type == self.GAME_TYPE_C_VS_MM:
             # Create players with random marks
             self.players.append(MiniMaxComputerPlayer(player_marks[0], display_game))
             self.players.append(ComputerPlayer(player_marks[1], display_game))
-        # Game type 4: Human vs MinMax Computer
+        # Game type 4: Human vs MiniMax Computer
         elif game_type == self.GAME_TYPE_H_VS_MM:
             # game is always displayed
             # Create players with random marks
